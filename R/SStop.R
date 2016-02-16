@@ -1,13 +1,15 @@
-## library(MCMCpack);
-
-## source('batchmeans.R')# Scripts to compute Effective Sample Size
-## source('factorSS.R');
-## source('stepOut.R');
-## source('heuristicOpt.R');
-## source('estimateFactors.R');
-
-
-
+##' Function to run automated-factor slice sampling
+##'
+##' todo: more about provenance and optional arguments...
+##' @title getSliceSamples
+##' @param LL the loglikelihood function
+##' @param x0 a vector specifying the start for the chain
+##' @return a matrix with columns as parameters and rows as post-burnin samples
+##' @author Pete Dodd
+##' @examples
+##' rosen <- function(x) -(1-x[1])^2 - 100*(x[2] - x[1]^2)^2
+##' runss <- getSliceSamples(LL=arosen,x0=c(0,0),useFactor=TRUE)
+##' corplot(runss)
 getSliceSamples <- function(
     LL, x0,                             #log-like and starting
     nBurnin = 10 * 1024,
@@ -140,53 +142,3 @@ getSliceSamples <- function(
     return(betaDraws)
     
 }
-
-
-## ##  --------------  tests -------------
-## ##  run this on banana
-## source('~/Documents/Rwork/useful/mysplom2.R')
-
-## rosenbrock <- function(x){
-##     f <- (1-x[1])^2 + 100*(x[2] - x[1]^2)^2
-##     g <- c(100*2*(x[2] - x[1]^2)*(-2)*x[1] - 2*(1-x[1]),
-##      200*(x[2] - x[1]^2) )
-##     return(list(logp=-f,grad=-g))
-## }
-
-## ## rosen
-## arosen <- function(x) return(rosenbrock(x)$logp)
-
-## runss <- getSliceSamples(LL=arosen,x0=c(0,0),useFactor=TRUE)
-## mysplom(runss)
-
-## ## gaussian
-## gL <- function(x) -0.5*sum(x^2)
-
-## runss <- getSliceSamples(LL=gL,x0=c(0,0),useFactor=TRUE)
-## mysplom(runss)
-
-## ## medium...big...
-
-## N <- 5
-
-## testf2 <- function(x){
-##     f <- 0
-##     df <- rep(0,2*N)
-##     for(i in 1:N) f <- f - 100*(x[1+2*(i-1)]-x[2+2*(i-1)])^2 - (x[1+2*(i-1)]+x[2+2*(i-1)])^2
-##     for(i in 1:N) df[c(1+2*(i-1),2+2*(i-1))] <- c(-200*(x[1+2*(i-1)]-x[2+2*(i-1)]) -2*(x[1+2*(i-1)]+x[2+2*(i-1)]), +200*(x[1+2*(i-1)]-x[2+2*(i-1)]) -2*(x[1+2*(i-1)]+x[2+2*(i-1)]))
-##     return(list(logp=f,grad=df))
-## }
-
-## testf <- function(x) testf2(x)$logp
-
-## runss <- getSliceSamples(LL=testf,x0=rep(0,2*N),useFactor=TRUE)
-
-## colnames(runss) <- letters[1:(2*N)]
-
-## chains <- mcmc(runss[,1:10])
-
-## xyplot(chains,ask=FALSE,layout=c(2,5))
-
-## mysplom(runss[,1:10])
-
-
