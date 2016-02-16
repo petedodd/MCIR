@@ -81,6 +81,8 @@ system.time({
 corplot(test$samps,labels=c('x','y'),points=TRUE)
 corplot(test$samps,labels=c('x','y'))
 
+
+
 ## mysplom2(psmp,labels=c('x','y'),weights=twts)
 
 ## efficiency about 67%!

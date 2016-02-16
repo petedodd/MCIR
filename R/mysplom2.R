@@ -10,7 +10,7 @@
 ##' @author Pete Dodd
 ##' @examples
 ##' corplot(matrix(rnorm(3e4),ncol=3),labels=c('x','y','z'),main='3D isotropic Gaussian')
-corplot <- function(X,main='',labels=NULL,file='',points=FALSE){
+corplot <- function(X,main='',labels=NULL,file='',weights=1,points=FALSE){
   if(!is.null(labels)){
     colnames(X) <- labels
     f <- 1/(length(labels))^.2
