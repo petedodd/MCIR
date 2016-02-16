@@ -78,6 +78,8 @@ test <- nestwrap(likelihood = like22, prior=pspec22)
 corplot(test$samps,labels=c('x','y'),weights=test$wts,points=TRUE)
 corplot(test$samps,labels=c('x','y'))
 
+
+
 ## mysplom2(psmp,labels=c('x','y'),weights=twts)
 
 ## efficiency about 67%!
