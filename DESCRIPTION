@@ -6,3 +6,8 @@ Description: This package implements some Monte Carlo algorithms for Bayesian in
 Depends: R (>= 3.0.1)
 License: TBC
 LazyData: true
+Imports: MCMCpack,
+    lattice,
+    hexbin
+Suggests: coda,
+    lattice
