@@ -165,7 +165,7 @@ nuts_da <- function(f, M, Madapt, theta0, delta = 0.6){
     close(pb)                           #close progress bar
     
     samples <- samples[(Madapt+1):nrow(samples),] #(Madapt+1:end, :);
-    sprintf('Took %d gradient evaluations.\n', nfevals) #todo: unsure whence nfev
+    ## sprintf('Took %d gradient evaluations.\n', nfevals) #todo:
     return(list(samples=samples,epsilon=epsilon))
 }                                       #end of nuts_da
 
@@ -173,25 +173,27 @@ find_reasonable_epsilon <- function(theta0, grad0, logp0, f){
     epsilon <- 1
     r0 <- runif(length(theta0))
     ## % Figure out what direction we should be moving epsilon.
-    LFval <- leapfrog(theta0, r0, grad0, epsilon, f)
+    LFval <- leapfrog(theta0, r0, grad0, epsilon, f )#, nfevals)
     rprime <- LFval$rprime
     logpprime <- LFval$logpprime
+    ## nfevals <- LFval$nfevals
     acceptprob <- exp(logpprime - logp0 - 0.5 * (sum(rprime^2) - sum(r0^2))) 
     a <- 2 * (acceptprob > 0.5) - 1
     ## % Keep moving epsilon in that direction until acceptprob crosses 0.5.
     while(acceptprob^a > 2^(-a)){
         epsilon <- epsilon * 2^a
-        LFval <- leapfrog(theta0, r0, grad0, epsilon, f)
+        LFval <- leapfrog(theta0, r0, grad0, epsilon, f)#, nfevals)
         rprime <- LFval$rprime
         logpprime <- LFval$logpprime
+        ## nfevals <- LFval$nfevals
         acceptprob <- exp(logpprime - logp0 - 0.5 * (sum(rprime^2) - sum(r0^2))) 
     }
     return(epsilon)    
 } 
 
-nfevals <- 1                            #a counter for recording function evaluations
+## nfevals <- 1                            #a counter for recording function evaluations
 
-leapfrog <- function(theta, r, grad, epsilon, f){
+leapfrog <- function(theta, r, grad, epsilon, f){#, nfevals){
     rprime <- r + 0.5 * epsilon * grad
     thetaprime <- theta + epsilon * rprime
     fval <- f(thetaprime)
@@ -199,9 +201,9 @@ leapfrog <- function(theta, r, grad, epsilon, f){
     gradprime <- fval$grad
     rprime <- rprime + 0.5 * epsilon * gradprime
     ## global nfevals                      #todo - this might need changing
-    nfevals <<- nfevals + 1
+    ## nfevals <<- nfevals + 1
     return(list(thetaprime=thetaprime, rprime=rprime, gradprime=gradprime,
-                logpprime=logpprime))
+                logpprime=logpprime))#, nfevals=nfevals))
 }
 
 stop_criterion <- function(thetaminus, thetaplus, rminus, rplus){
@@ -217,11 +219,12 @@ build_tree <- function(theta, r, grad, logu, v, j, epsilon, f, joint0){
     ## TODO: remove all capital Ls...
     if(j==0){
         ##     % Base case: Take a single leapfrog step in the direction v.
-        LFval <- leapfrog(theta, r, grad, v*epsilon, f)
+        LFval <- leapfrog(theta, r, grad, v*epsilon, f)#, nfevals)
         thetaprime <- LFval$thetaprime
         rprime <- LFval$rprime
         gradprime <- LFval$gradprime   
         logpprime <- LFval$logpprime
+        ## nfevals <- nfevals + LFval$nfevals
         joint <- logpprime - 0.5 * sum(rprime^2)
         ##     % Is the new point in the slice?
         nprime <- logu < joint
@@ -252,6 +255,7 @@ build_tree <- function(theta, r, grad, logu, v, j, epsilon, f, joint0){
         thetaprime <- tree$thetaprime
         gradprime <- tree$gradprime
         logpprime <- tree$logpprime
+        ## nfevals <- LFval$nfevals
         nprime <- tree$nprime
         sprime <- tree$sprime
         alphaprime <- tree$alphaprime
@@ -269,6 +273,7 @@ build_tree <- function(theta, r, grad, logu, v, j, epsilon, f, joint0){
                 thetaprime2 <- tree$thetaprime
                 gradprime2 <- tree$gradprime
                 logpprime2 <- tree$logpprime
+                ## nfevals2 <- tree$nfevals
                 nprime2 <- tree$nprime
                 sprime2 <- tree$sprime
                 alphaprime2 <- tree$alphaprime
@@ -283,6 +288,7 @@ build_tree <- function(theta, r, grad, logu, v, j, epsilon, f, joint0){
                 thetaprime2 <- tree$thetaprime
                 gradprime2 <- tree$gradprime
                 logpprime2 <- tree$logpprime
+                ## nfevals2 <- tree$nfevals
                 nprime2 <- tree$nprime
                 sprime2 <- tree$sprime
                 alphaprime2 <- tree$alphaprime
