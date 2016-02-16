@@ -14,7 +14,7 @@ getSliceSamples <- function(
     LL, x0,                             #log-like and starting
     nBurnin = 10 * 1024,
     nSample = 10000,
-    verbose = TRUE, useFactor = TRUE,
+    verbose = FALSE, useFactor = TRUE,
     useTrueFactors = FALSE              #to delete?
     ){
 
@@ -48,8 +48,11 @@ getSliceSamples <- function(
     if ( verbose  ){
         cat('Starting burnin... \n\n');
     }
+
+    pb <- txtProgressBar(min=1,max=(nBurnin+nSample),char='.',style=3) #progress bar
     
     for ( I in 1:nBurnin ){
+        setTxtProgressBar(pb, I)        #progress
 	##  Output Iteration Number
 	if ( verbose && (0 == (I %% printScreenThin)) ){
 		cat('Burnin Iteration ', I, '\n\n');
@@ -102,6 +105,7 @@ getSliceSamples <- function(
     betaDraws <- array( 0, c(nSample,K));
 
     for ( I in 1:nSample ){
+        setTxtProgressBar(pb, I+nBurnin)        #progress
 	##  Output Iteration Number
 	if ( verbose && (0 == (I %% printScreenThin)) ){
             cat('Sampling Iteration ', I, '\n\n');
@@ -138,7 +142,7 @@ getSliceSamples <- function(
     ##     ## Ignore Negative Autocorrelation (minimal)
     ##     betaESS[I] <- min(nSample,ess(betaDraws[,I]));
     ## }
-
+    close(pb)                           #close progress bar
     return(betaDraws)
     
 }
