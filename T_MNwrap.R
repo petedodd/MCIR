@@ -64,18 +64,21 @@ inc <- function(){
 
 like22 <- function(data, model, parnames, parvals){
     inc()
-    ## arosen(parvals)
-    g2d(parvals)
+    arosen(parvals)
+    ## g2d(parvals)
 }
 
 ## run the sampler -- VERY slow
-test <- nestwrap(likelihood = like22, prior=pspec22)
+system.time({
+    test <- nestwrap(likelihood = like22, prior=pspec22)
+})
+
 
 ## psmp <- test$samps[,1:2]
 ## twts <- test$samps[,3]; twts <- twts-max(twts)
 ## twts <- exp(twts); twts <- twts/sum(twts)
 
-corplot(test$samps,labels=c('x','y'),weights=test$wts,points=TRUE)
+corplot(test$samps,labels=c('x','y'),points=TRUE)
 corplot(test$samps,labels=c('x','y'))
 
 ## mysplom2(psmp,labels=c('x','y'),weights=twts)
