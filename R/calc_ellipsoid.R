@@ -1,4 +1,4 @@
-library(Matrix)
+## library(Matrix)
 
 calc_ellipsoid <- function(u, VS){
     ## function [B, mu, VE, flag] =

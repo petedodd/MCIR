@@ -4,7 +4,7 @@
 \alias{corplot}
 \title{corplot}
 \usage{
-corplot(X, main = "", labels = NULL, file = "")
+corplot(X, main = "", labels = NULL, file = "", points = FALSE)
 }
 \arguments{
 \item{X}{a matrix whose columns refer to parameters and whose rows to samples}
@@ -22,7 +22,7 @@ None
 A hexbinned pairs and density plot to examine correlations.
 }
 \details{
-The diagonal panels are histograms of each parameter representing estimates of marginal density. The lower half shows hexbinned plots of correlations between parameters (estimates of pairwise joint densities) together with a loess smoother to indicate trend.
+The diagonal panels are histograms of each parameter representing estimates of marginal density. The lower half shows hexbinned plots of correlations between parameters (estimates of pairwise joint densities) together with a loess smoother to indicate trend. If \code{points=TRUE} the pair plots are not hexbinned and points are plotted with alpha proportional to weight.
 }
 \examples{
 corplot(matrix(rnorm(3e4),ncol=3),labels=c('x','y','z'),main='3D isotropic Gaussian')

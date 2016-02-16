@@ -9,6 +9,7 @@ LazyData: true
 Imports: MCMCpack,
     lattice,
     hexbin,
-    parallel
+    parallel,
+    Matrix
 Suggests: coda,
     lattice

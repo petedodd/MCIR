@@ -9,22 +9,22 @@
 ## AFSS
 
 library(lattice)
-setwd('/Users/pjd/Documents/Python/matlabmultinestR/src')
+## setwd('/Users/pjd/Documents/Python/matlabmultinestR/src')
 
 ## testing the outputs
 DEBUG <- FALSE
 
-## get the source files
-srcfiles <- dir(path='../src/',pattern = '\\.R')
-srcfiles <- srcfiles[srcfiles!='testing.R']
-srcfiles <- srcfiles[srcfiles!='wrap.R']
+## ## get the source files
+## srcfiles <- dir(path='../src/',pattern = '\\.R')
+## srcfiles <- srcfiles[srcfiles!='testing.R']
+## srcfiles <- srcfiles[srcfiles!='wrap.R']
 
-## load em
-for(sf in srcfiles)
-    source(paste0('../src/',sf))
+## ## load em
+## for(sf in srcfiles)
+##     source(paste0('../src/',sf))
 
-source('~/Documents/Rwork/useful/mysplom3.R')
-source('~/Documents/Rwork/useful/mysplom2.R')
+## source('~/Documents/Rwork/useful/mysplom3.R')
+## source('~/Documents/Rwork/useful/mysplom2.R')
 
 
 
@@ -52,6 +52,8 @@ rosenbrock <- function(x){
 
 arosen <- function(x) return(rosenbrock(x)$logp)
 
+g2d <- function(x) -.5*t(x) %*% matrix(c(1,.2,2,.2),ncol=2) %*% x
+
 pspec22 <- data.frame(name=c('x','y'),type='uniform',bottom=-2,top=4)
 
 nstep <- 1
@@ -62,18 +64,19 @@ inc <- function(){
 
 like22 <- function(data, model, parnames, parvals){
     inc()
-    arosen(parvals)
+    ## arosen(parvals)
+    g2d(parvals)
 }
 
-## run the sampler
+## run the sampler -- VERY slow
 test <- nestwrap(likelihood = like22, prior=pspec22)
 
 ## psmp <- test$samps[,1:2]
 ## twts <- test$samps[,3]; twts <- twts-max(twts)
 ## twts <- exp(twts); twts <- twts/sum(twts)
 
-mysplom2(test$samps,labels=c('x','y'),weights=test$wts)
-mysplom(test$samps,labels=c('x','y'))
+corplot(test$samps,labels=c('x','y'),weights=test$wts,points=TRUE)
+corplot(test$samps,labels=c('x','y'))
 
 ## mysplom2(psmp,labels=c('x','y'),weights=twts)
 
