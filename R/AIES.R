@@ -78,7 +78,34 @@ update_step <- function(X1,X2,L1,L2,lnprob,a,CPUs=1){
   return(list(X1=X1,X2=X2,L1=L1,L2=L2,acc=acc))
 }
 
-
+##' Function to obtain affine-invariant ensemble samples
+##'
+##' todo: provenance and more on arguments
+##' @title getAIESamples
+##' @param halfN half the number of walkers in the ensemble
+##' @param nosteps the number of steps taken (chainlengths)
+##' @param lnprob the loglikelihood function
+##' @param x0 a vector of initial parameter values
+##' @param a alg tuning: todo
+##' @param eps alg tuning: todo
+##' @param CPUs number of CPUs to use (experimental; not working)
+##' @param dynlib if a compiled library is need to evaluate \code{lnprob}
+##' @param echo if \code{TRUE} then more verbose output
+##' @param lgf if present, the filename for a logfile to dump information into
+##' @return \code{list(chains=list(R1=R2,R2=R2),acc=acc,accv=accv,a=a, llike=list(LL1=LL1,LL2=LL2),lnprob=lnprob)} - returned in this form to allow continuation with \code{continueAIESamples}. The chains \code{R1} and \code{R2} are matrices with columns for parameteres and rows for iterations.
+##' @examples
+##' #Rosenrbock banana function
+##' rosen <- function(x) -(1-x[1])^2 - 100*(x[2] - x[1]^2)^2
+##'
+##' #50 walkers for 200 steps
+##' S <- getAIESamples(50,200,arosen,runif(2))
+##' plotAIEchains(S)
+##' SP <- processAIESamples(S,burnin=50)
+##' corplot(SP)
+##'
+##' #continue for another 100 steps
+##' S <- continueAIESamples(Y=S,nosteps=100)
+##' @author Pete Dodd
 getAIESamples <- function(halfN,nosteps,lnprob,x0,a=2,eps=1e-2,
                        CPUs=1,dynlib=NULL,echo=FALSE,lgf=NULL){
     ## eps is the pterturbation around initial state
@@ -136,8 +163,10 @@ getAIESamples <- function(halfN,nosteps,lnprob,x0,a=2,eps=1e-2,
         }
     }
     if( any(U$L1==-Inf) | any(U$L2==-Inf) ){ stop('Bailing! Initial walker positions have infinite likelihood!') }
+    pb <- txtProgressBar(min=1,max=(nosteps),char='.',style=3) #progress bar
     for(i in 1:nosteps){
         if(echo & !i%%50 ) print(paste0('---',i,'---'))
+        setTxtProgressBar(pb, i)        #progress
         U <- update_step(X1=U$X1,X2=U$X2,L1=U$L1,L2=U$L2,lnprob=lnprob,a=a,CPUs=CPUs)
         R1[[i]] <- U$X1                     #records
         R2[[i]] <- U$X2
@@ -152,13 +181,14 @@ getAIESamples <- function(halfN,nosteps,lnprob,x0,a=2,eps=1e-2,
             cat(paste0('==acc== ',accv[i]),file=lgf,append = TRUE);cat('\n',file=lgf,append = TRUE)
         }
     }
+    close(pb)                           #close progress bar
     acc <- acc/(2*halfN*nosteps)
     return(list(chains=list(R1=R2,R2=R2),acc=acc,accv=accv,a=a,
                 llike=list(LL1=LL1,LL2=LL2),lnprob=lnprob))
 }
 
 ## carry on this for another notsteps
-continueSamples <- function(nosteps,Y,CPUs=1,dynlib=NULL,echo=FALSE,lgf=NULL){
+continueAIESamples <- function(nosteps,Y,CPUs=1,dynlib=NULL,echo=FALSE,lgf=NULL){
     if(!is.null(lgf)){
         if(file.exists(lgf)) file.remove(lgf)
         file.create(lgf)
@@ -200,8 +230,10 @@ continueSamples <- function(nosteps,Y,CPUs=1,dynlib=NULL,echo=FALSE,lgf=NULL){
         cat(summary(unlist(LL1)),file=lgf,append = TRUE);cat('\n',file=lgf,append = TRUE)
         cat(summary(unlist(LL2)),file=lgf,append = TRUE);cat('\n',file=lgf,append = TRUE)
     }
+    pb <- txtProgressBar(min=1,max=(nosteps),char='.',style=3) #progress bar
     for(i in 1:nosteps){
         if(echo & !i%%50 ) print(paste0('---',i,'---'))
+        setTxtProgressBar(pb, i)        #progress
         U <- update_step(X1=U$X1,X2=U$X2,L1=U$L1,L2=U$L2,lnprob=lnprob,a=a,CPUs=CPUs)
         R1[[n+i]] <- U$X1                     #records
         R2[[n+i]] <- U$X2
@@ -216,6 +248,7 @@ continueSamples <- function(nosteps,Y,CPUs=1,dynlib=NULL,echo=FALSE,lgf=NULL){
             cat(paste0('==acc== ',accv[n+i]),file=lgf,append = TRUE);cat('\n',file=lgf,append = TRUE)
         }
     }
+    close(pb)                           #close progress bar
     acc <- acc/( 2 * w * (nosteps + n) )
     return(list(chains=list(R1=R2,R2=R2),acc=acc,accv=accv,a=a,
                 llike=list(LL1=LL1,LL2=LL2),lnprob=lnprob))  
