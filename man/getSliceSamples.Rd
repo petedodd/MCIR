@@ -5,7 +5,7 @@
 \title{getSliceSamples}
 \usage{
 getSliceSamples(LL, x0, nBurnin = 10 * 1024, nSample = 10000,
-  verbose = TRUE, useFactor = TRUE, useTrueFactors = FALSE)
+  verbose = FALSE, useFactor = TRUE, useTrueFactors = FALSE)
 }
 \arguments{
 \item{LL}{the loglikelihood function}

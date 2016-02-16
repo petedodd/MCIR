@@ -1,5 +1,5 @@
-Package: MCCR
-Title: Monte Carlo Calibration Routines: A Collection of Generic Algorithms for Bayesian Inference
+Package: MCIR
+Title: Monte Carlo Inference Routines: A Collection of Generic Algorithms for Bayesian Inference
 Version: 0.0.0.9000
 Authors@R: person("Pete", "Dodd", , "p.j.dodd@sheffield.ac.uk", role = c("aut", "cre"))
 Description: This package implements some Monte Carlo algorithms for Bayesian inference that require minimal tuning, including: automated factor slice sampling; affine-invariant ensemble sampling; No-U-Turn (NUTS) Hamiltonian Monte Carlo; and the MultiNest nested importance sampling algorithm.
@@ -8,6 +8,7 @@ License: TBC
 LazyData: true
 Imports: MCMCpack,
     lattice,
-    hexbin
+    hexbin,
+    parallel
 Suggests: coda,
     lattice

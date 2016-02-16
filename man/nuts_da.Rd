@@ -7,7 +7,7 @@
 nuts_da(f, M, Madapt, theta0, delta = 0.6)
 }
 \arguments{
-\item{f}{a function returning list with \code{logp} being the loglikelihood and \code{grad} being its gradient}
+\item{f}{a function returning list with \code{list(logp=logp,grad=grad)}, \code{logp} being the loglikelihood and \code{grad} being its gradient}
 
 \item{M}{the number of samples to generate}
 
@@ -18,7 +18,7 @@ nuts_da(f, M, Madapt, theta0, delta = 0.6)
 \item{delta}{hould be between 0 and 1, and is a target HMC acceptance probability. Defaults to 0.6 if unspecified.}
 }
 \value{
-\code{list(samples,epsilon)}, samples being a matrix with columns parameters and rows samples
+\code{list(samples=samples,epsilon=epsilon)}, samples being a matrix with columns parameters and rows samples
 }
 \description{
 Function implementing the No-U-Turn Sampler (NUTS)
