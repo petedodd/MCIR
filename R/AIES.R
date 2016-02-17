@@ -98,7 +98,7 @@ update_step <- function(X1,X2,L1,L2,lnprob,a,CPUs=1){
 ##' rosen <- function(x) -(1-x[1])^2 - 100*(x[2] - x[1]^2)^2
 ##'
 ##' #50 walkers for 200 steps
-##' S <- getAIESamples(50,200,arosen,runif(2))
+##' S <- getAIESamples(50,200,rosen,runif(2))
 ##' plotAIEchains(S)
 ##' SP <- processAIESamples(S,burnin=50)
 ##' corplot(SP)
@@ -162,7 +162,7 @@ getAIESamples <- function(halfN,nosteps,lnprob,x0,a=2,eps=1e-2,
             }
         }
     }
-    if( any(U$L1==-Inf) | any(U$L2==-Inf) ){ stop('Bailing! Initial walker positions have infinite likelihood!') }
+    if( any(U$L1==-Inf) | any(U$L2==-Inf) ){ cat('---',sum(U$L1==-Inf),'---',sum(U$L2==-Inf),'----\n');cat('---\n');print(U$X1[U$L1==-Inf]);cat('\n\n---\n\n');print(U$X2[U$L2==-Inf]);cat('\n----\n');stop('Bailing! Initial walker positions have infinite likelihood!'); }
     pb <- txtProgressBar(min=1,max=(nosteps),char='.',style=3) #progress bar
     for(i in 1:nosteps){
         if(echo & !i%%50 ) print(paste0('---',i,'---'))

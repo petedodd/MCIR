@@ -8,7 +8,7 @@
 ##' @author Pete Dodd
 ##' @examples
 ##' rosen <- function(x) -(1-x[1])^2 - 100*(x[2] - x[1]^2)^2
-##' runss <- getSliceSamples(LL=arosen,x0=c(0,0),useFactor=TRUE)
+##' runss <- getSliceSamples(LL=rosen,x0=c(0,0),useFactor=TRUE)
 ##' corplot(runss)
 getSliceSamples <- function(
     LL, x0,                             #log-like and starting
