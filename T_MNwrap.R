@@ -54,6 +54,8 @@ arosen <- function(x) return(rosenbrock(x)$logp)
 
 g2d <- function(x) -.5*t(x) %*% matrix(c(1,.2,2,.2),ncol=2) %*% x
 
+g2d <- function(x) sum(-.5*(x-c(1,2))^2/c(.1,.22))
+
 pspec22 <- data.frame(name=c('x','y'),type='uniform',bottom=-2,top=4)
 
 nstep <- 1
@@ -64,13 +66,13 @@ inc <- function(){
 
 like22 <- function(data, model, parnames, parvals){
     inc()
-    arosen(parvals)
-    ## g2d(parvals)
+    ## arosen(parvals)
+    g2d(parvals)
 }
 
 ## run the sampler -- VERY slow
 system.time({
-    test <- nestwrap(likelihood = like22, prior=pspec22)
+    test <- nestwrap(likelihood = like22, tolerance = 2,prior=pspec22)
 })
 
 
@@ -79,8 +81,29 @@ system.time({
 ## twts <- exp(twts); twts <- twts/sum(twts)
 
 corplot(test$samps,labels=c('x','y'),points=TRUE)
-corplot(test$samps,labels=c('x','y'))
+corplot(test$samps,labels=c('x','y'),points=TRUE,weights=test$wts)
+corplot(test$samps,labels=c('x','y'),weights = test$samps)
 
+## without weighting
+curve(dnorm(x,1,.1),from=0,to=2,n=200)
+hist(test$samps[,1],add=TRUE,freq=FALSE,breaks=50)
+lines(density(test$samps[,1]),col=2)
+
+## with some sort of weighting
+curve(dnorm(x,1,.1),from=0,to=2,n=200)
+lines(density(test$samps[,1],weights=test$wts),col=2)
+
+mean(test$samps[,1])
+sum((test$samps[,1]*test$wts))
+
+mean((test$samps[,1]-1)^2)
+sum((test$samps[,1]-1)^2*test$wts)
+
+mean(test$samps[,2])
+sum((test$samps[,2]*test$wts))
+
+mean((test$samps[,2]-2)^2)
+sum((test$samps[,2]-2)^2*test$wts)
 
 
 ## mysplom2(psmp,labels=c('x','y'),weights=twts)
