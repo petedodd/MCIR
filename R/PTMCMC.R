@@ -140,7 +140,8 @@ AMMHstepper <- function(x0,sigprop,Tchain,LL,adaptstart=1e2,lag=500,bet=.1,
             if(runif(1)<bet){
                 sigmat <- diag(1e-2/DIM,DIM) #safe one
             } else {
-                sigmat <- 2.38^2*getEmpSig(X[,max(1,i-lag):i],shrink='OAS')/DIM
+                sigmat <- 2.38^2*getEmpSig(X[,max(1,i-lag):i])/DIM
+                ## sigmat <- 2.38^2*getEmpSig(X[,max(1,i-lag):i],shrink='OAS')/DIM
                 if(tr(sigmat)<1e-6) sigmat <- diag(1e-2/DIM,DIM) #safe one
             }
             ## print(sigmat)
