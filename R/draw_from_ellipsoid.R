@@ -53,7 +53,7 @@ draw_from_ellipsoid <- function(B, mu, N ){
     return(Re(pnts))
 }
 
-## test <- draw_from_ellipsoid(B=matrix(c(-1,-1,1,1),ncol=2),c(0,0),1e1)
+## test <- draw_from_ellipsoid(B=matrix(c(-1,-1,1,1),ncol=2),c(0,0),1e2)
 
 ## plot(c(-1,1),c(-1,1),col=2)
 ## abline(v=1,col=2);abline(v=-1,col=2);
